@@ -22,7 +22,7 @@ read -p "Enter the hostname to place into /etc/hostname for the new system: " ho
 lsblk -p
 ls -l --color /dev/disk/by-id/*
 
-read -e -p "Which disk to install to? " disk
+read -e -p "Which disk (not partition) to install to? " disk
 
 [[ ! -e $disk ]] \
     && echo "Error: unknown disk $disk" 1>&2 \
