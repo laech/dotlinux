@@ -15,7 +15,7 @@ cd arch-zfs-esp-sync
 sudo -u nobody makepkg
 
 echo '
-targets=(linux)
+targets=(linux-lts linux)
 esp_fs=fs0
 esp_mount=/boot/efi
 ' > /etc/zfs-esp-sync
