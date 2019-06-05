@@ -49,10 +49,6 @@ sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
 readonly efi_disk="$disk-part$efi_partnum"
 readonly root_disk="$disk-part$root_partnum"
 
-# Without this the ZFS commands sometimes complaints the partition
-# cannot be found
-sleep 2
-
 zpool create -f \
       -o ashift=12 \
       -O encryption=on \
@@ -68,7 +64,6 @@ zpool create -f \
 
 zfs create -o mountpoint=/ zroot/arch
 zfs create -o mountpoint=/home zroot/home
-
 zpool set bootfs=zroot/arch zroot
 
 mkfs.fat -F32 "$efi_disk"
@@ -78,23 +73,17 @@ mount "$efi_disk" /mnt/boot/efi
 readonly mirrors_url="https://www.archlinux.org/mirrorlist/?country=NZ&country=AU&protocol=https&use_mirror_status=on"
 echo "# $mirrors_url" > /etc/pacman.d/mirrorlist
 curl -s "$mirrors_url" | sed -e 's/^#Server/Server/' -e '/^#/d' >> /etc/pacman.d/mirrorlist
-
 pacstrap /mnt base
 
 genfstab -U -f /mnt/boot/efi /mnt >> /mnt/etc/fstab
 
-cp "$(dirname "$0")"/*.sh /mnt/root/
-
 export host
 export username
+cp "$(dirname "$0")"/*.sh /mnt/root/
 arch-chroot /mnt /root/arch-chroot.sh
-arch-chroot /mnt /root/arch-chroot-zfs-esp-sync.sh
-arch-chroot /mnt /root/arch-chroot-dotfiles.sh
-arch-chroot /mnt passwd
 arch-chroot /mnt passwd "$username"
 
 rm -v /mnt/root/arch-chroot.sh
-rm -v /mnt/root/arch-chroot-zfs-esp-sync.sh
 umount -R /mnt
 zfs umount -a
 zpool export -a
