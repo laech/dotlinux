@@ -17,12 +17,12 @@ set -o xtrace
 
 modprobe zfs
 
-read -p "Enter the hostname to place into /etc/hostname for the new system: " host
+read -r -p "Enter the hostname to place into /etc/hostname for the new system: " host
 
 lsblk -p
 ls -l --color /dev/disk/by-id/*
 
-read -e -p "Which disk (not partition) to install to? " disk
+read -r -e -p "Which disk (not partition) to install to? " disk
 
 [[ ! -e $disk ]] \
     && echo "Error: unknown disk $disk" 1>&2 \
@@ -61,7 +61,7 @@ zpool create -f \
       -O canmount=off \
       -O mountpoint=none \
       -R /mnt \
-      zroot $root_disk
+      zroot "$root_disk"
 
 zfs create -o mountpoint=/ zroot/arch
 zfs create -o mountpoint=/home zroot/home
@@ -80,12 +80,13 @@ pacstrap /mnt base
 
 genfstab -U -f /mnt/boot/efi /mnt >> /mnt/etc/fstab
 
-cp "$(dirname ""$0"")"/arch-chroot.sh /mnt/root/
-cp "$(dirname ""$0"")"/arch-chroot-zfs-esp-sync.sh /mnt/root/
+cp "$(dirname "$0")"/arch-chroot.sh /mnt/root/
+cp "$(dirname "$0")"/arch-chroot-zfs-esp-sync.sh /mnt/root/
 
 export host
 arch-chroot /mnt /root/arch-chroot.sh
 arch-chroot /mnt /root/arch-chroot-zfs-esp-sync.sh
+arch-chroot /mnt /root/arch-chroot-dotfiles.sh
 arch-chroot /mnt passwd
 
 rm -v /mnt/root/arch-chroot.sh

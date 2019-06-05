@@ -19,4 +19,4 @@ targets=(linux-lts linux)
 esp_fs=fs0
 esp_mount=/boot/efi
 ' > /etc/zfs-esp-sync
-pacman -U --noconfirm *.pkg.tar.xz
+pacman -U --noconfirm -- *.pkg.tar.xz
