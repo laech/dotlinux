@@ -49,6 +49,10 @@ sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
 readonly efi_disk="$disk-part$efi_partnum"
 readonly root_disk="$disk-part$root_partnum"
 
+# Without this the ZFS commands sometimes complaints the partition
+# cannot be found
+sleep 2
+
 zpool create -f \
       -o ashift=12 \
       -O encryption=on \
