@@ -30,6 +30,10 @@ hwclock --systohc
 
 locale-gen
 
+readonly mirrors_url="https://www.archlinux.org/mirrorlist/?country=NZ&country=AU&protocol=https&use_mirror_status=on"
+echo "# $mirrors_url" > /etc/pacman.d/mirrorlist
+curl -s "$mirrors_url" | sed -e 's/^#Server/Server/' -e '/^#/d' >> /etc/pacman.d/mirrorlist
+
 grep -F '[archzfs]' /etc/pacman.conf > /dev/null || echo '
 [archzfs]
 Server = https://archzfs.com/$repo/$arch
@@ -56,3 +60,6 @@ if [[ "$installed_linux_version" != "$zfs_want_linux_version" ]]; then
 fi
 
 pacman -S --needed --noconfirm archzfs-linux
+
+systemctl enable zfs.target
+systemctl enable zfs-mount.service

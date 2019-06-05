@@ -17,7 +17,8 @@ set -o xtrace
 
 modprobe zfs
 
-read -r -p "Enter the hostname to place into /etc/hostname for the new system: " host
+read -r -p "Enter the username to be created in the new system: " username
+read -r -p "Enter the hostname to place into /etc/hostname in the new system: " host
 
 lsblk -p
 ls -l --color /dev/disk/by-id/*
@@ -48,8 +49,6 @@ sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
 readonly efi_disk="$disk-part$efi_partnum"
 readonly root_disk="$disk-part$root_partnum"
 
-sleep 2
-
 zpool create -f \
       -o ashift=12 \
       -O encryption=on \
@@ -68,26 +67,27 @@ zfs create -o mountpoint=/home zroot/home
 
 zpool set bootfs=zroot/arch zroot
 
-# Import archzfs repo keys
-pacman-key --recv-keys F75D9D76
-pacman-key --lsign-key F75D9D76
-
 mkfs.fat -F32 "$efi_disk"
 mkdir -p /mnt/boot/efi
 mount "$efi_disk" /mnt/boot/efi
+
+readonly mirrors_url="https://www.archlinux.org/mirrorlist/?country=NZ&country=AU&protocol=https&use_mirror_status=on"
+echo "# $mirrors_url" > /etc/pacman.d/mirrorlist
+curl -s "$mirrors_url" | sed -e 's/^#Server/Server/' -e '/^#/d' >> /etc/pacman.d/mirrorlist
 
 pacstrap /mnt base
 
 genfstab -U -f /mnt/boot/efi /mnt >> /mnt/etc/fstab
 
-cp "$(dirname "$0")"/arch-chroot.sh /mnt/root/
-cp "$(dirname "$0")"/arch-chroot-zfs-esp-sync.sh /mnt/root/
+cp "$(dirname "$0")"/*.sh /mnt/root/
 
 export host
+export username
 arch-chroot /mnt /root/arch-chroot.sh
 arch-chroot /mnt /root/arch-chroot-zfs-esp-sync.sh
 arch-chroot /mnt /root/arch-chroot-dotfiles.sh
 arch-chroot /mnt passwd
+arch-chroot /mnt passwd "$username"
 
 rm -v /mnt/root/arch-chroot.sh
 rm -v /mnt/root/arch-chroot-zfs-esp-sync.sh
