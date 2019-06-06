@@ -106,6 +106,7 @@ git clone --bare https://gitlab.com/lae/dotfiles.git "/home/$username/.cfg"
 alias config='git --git-dir="/home/$username/.cfg" --work-tree="/home/$username"'
 config config --local status.showUntrackedFiles no
 config checkout
+config remote set-url origin git@gitlab.com:lae/dotfiles.git
 EOF
 }
 
