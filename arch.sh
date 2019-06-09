@@ -49,6 +49,9 @@ sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
 readonly efi_disk="$disk-part$efi_partnum"
 readonly root_disk="$disk-part$root_partnum"
 
+while [[ ! -e "$efi_disk" ]]; do sleep 1; done
+while [[ ! -e "$root_disk" ]]; do sleep 1; done
+
 zpool create -f \
       -o ashift=12 \
       -O encryption=on \
