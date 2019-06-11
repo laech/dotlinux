@@ -1,1 +1,3 @@
 Run ./arch.sh inside an Arch Linux live image with ZFS.
+
+shellx64_v1.efi is v1 UEFI shell copied from Arch Linux live image.
