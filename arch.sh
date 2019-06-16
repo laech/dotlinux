@@ -89,7 +89,7 @@ arch-chroot /mnt passwd "$username"
 mkdir -p /mnt/boot/efi/EFI/boot
 cp "$(dirname "$0")"/shellx64_v1.efi /mnt/boot/efi/EFI/boot/bootx64.efi
 
-rm -v /mnt/root/arch-chroot.sh
+rm -v /mnt/root/*.sh
 umount -R /mnt
 zfs umount -a
 zpool export -a
