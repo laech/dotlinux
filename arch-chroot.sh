@@ -105,6 +105,8 @@ setup_user() {
 git clone --bare https://gitlab.com/lae/dotfiles.git "/home/$username/.cfg"
 alias config='git --git-dir="/home/$username/.cfg" --work-tree="/home/$username"'
 config checkout
+config submodule init
+config submodule update
 config remote set-url origin git@gitlab.com:lae/dotfiles.git
 EOF
 }
