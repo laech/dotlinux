@@ -86,11 +86,16 @@ setup_zfs_esp_sync() {
     sudo -u nobody makepkg
 
     echo '
-targets=(linux-lts linux)
+default=linux
 esp_fs=fs0
 esp_mount=/boot/efi
 ' > /etc/zfs-esp-sync
+
     pacman -U --noconfirm -- *.pkg.tar.xz
+    systemctl enable zfs-esp-sync@linux.path
+    systemctl start zfs-esp-sync@linux.path
+    systemctl enable zfs-esp-sync@linux-lts.path
+    systemctl start zfs-esp-sync@linux-lts.path
 }
 
 setup_sudo() {
