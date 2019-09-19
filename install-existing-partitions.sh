@@ -17,40 +17,47 @@ set -o xtrace
 
 modprobe zfs
 
+read -r -p "Replace EFI/boot entry with EFI shell? [yes/no]" replace_efi_boot
+
+[[ "$replace_efi_boot" != "yes" ]] \
+    && [[ "$replace_efi_boot" != "no" ]] \
+    && echo "unknown response" \
+    && exit 1
+
 read -r -p "Enter the username to be created in the new system: " username
 read -r -p "Enter the hostname to place into /etc/hostname in the new system: " host
 
 lsblk -p
 ls -l --color /dev/disk/by-id/*
 
-read -r -e -p "Which disk (not partition) to install to? " disk
 
-[[ ! -e $disk ]] \
-    && echo "Error: unknown disk $disk" 1>&2 \
+read -r -e -p "Which disk for the EFI parition? " efi_disk
+
+[[ ! -e $efi_disk ]] \
+    && echo "Error: unknown disk $efi_disk" 1>&2 \
     && exit 1
 
-[[ $disk != /dev/disk/by-id/* ]] \
+[[ $efi_disk != /dev/disk/by-id/* ]] \
     && echo "Error: must choose a disk under /dev/disk/by-id/" 1>&2 \
     && exit 1
+
+
+read -r -e -p "Which disk for the root partition? " root_disk
+
+[[ ! -e $root_disk ]] \
+    && echo "Error: unknown disk $root_disk" 1>&2 \
+    && exit 1
+
+[[ $root_disk != /dev/disk/by-id/* ]] \
+    && echo "Error: must choose a disk under /dev/disk/by-id/" 1>&2 \
+    && exit 1
+
 
 timedatectl set-ntp true
 
 umount -R /mnt || true
 zfs umount -a
 zpool export -a
-
-readonly efi_partnum=1
-readonly root_partnum=2
-
-sgdisk --zap-all "$disk"
-sgdisk --new=$efi_partnum:0:+512M --typecode=$efi_partnum:EF00 "$disk"
-sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
-
-readonly efi_disk="$disk-part$efi_partnum"
-readonly root_disk="$disk-part$root_partnum"
-
-while [[ ! -e "$efi_disk" ]]; do sleep 1; done
-while [[ ! -e "$root_disk" ]]; do sleep 1; done
 
 zpool create -f \
       -o ashift=12 \
@@ -86,8 +93,10 @@ cp "$(dirname "$0")"/*.sh /mnt/root/
 arch-chroot /mnt /root/arch-chroot.sh
 arch-chroot /mnt passwd "$username"
 
-mkdir -p /mnt/boot/efi/EFI/boot
-cp "$(dirname "$0")"/shellx64_v1.efi /mnt/boot/efi/EFI/boot/bootx64.efi
+if [[ "$replace_efi_boot" == "yes" ]]; then
+    mkdir -p /mnt/boot/efi/EFI/boot
+    cp "$(dirname "$0")"/shellx64_v1.efi /mnt/boot/efi/EFI/boot/bootx64.efi
+fi
 
 rm -v /mnt/root/*.sh
 umount -R /mnt
