@@ -76,6 +76,7 @@ Server = https://archzfs.com/$repo/$arch
 }
 
 setup_zfs_esp_sync() {
+    local depends=
     pacman -S --needed --noconfirm base-devel git sudo
 
     cd /tmp
@@ -83,7 +84,9 @@ setup_zfs_esp_sync() {
     sudo -u nobody git clone https://gitlab.com/lae/arch-zfs-esp-sync.git
     cd arch-zfs-esp-sync
 
-    sudo -u nobody -- makepkg -s
+    depends=$(grep -F depends= PKGBUILD | sed 's/depends=(//' | sed 's/)//')
+    [[ "$depends" != "" ]] && pacman -S --needed --noconfirm $depends
+    sudo -u nobody makepkg
 
     echo '
 default=linux
