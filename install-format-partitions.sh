@@ -34,13 +34,13 @@ umount -R /mnt || true
 zfs umount -a
 zpool export -a
 
-readonly rescure_partnum=1
-readonly efi_partnum=2
+readonly efi_partnum=1
+readonly rescure_partnum=2
 readonly root_partnum=3
 
 sgdisk --zap-all "$disk"
-sgdisk --new=$rescure_partnum:0:+2G "$disk"
 sgdisk --new=$efi_partnum:0:+512M --typecode=$efi_partnum:EF00 "$disk"
+sgdisk --new=$rescure_partnum:0:+2G "$disk"
 sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
 
 readonly efi_disk="$disk-part$efi_partnum"
