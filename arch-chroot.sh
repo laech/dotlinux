@@ -95,10 +95,10 @@ esp_mount=/boot/efi
 ' > /etc/zfs-esp-sync
 
     pacman -U --noconfirm -- *.pkg.tar.xz
-    systemctl enable zfs-esp-sync@linux.path
-    systemctl start zfs-esp-sync@linux.path
-    systemctl enable zfs-esp-sync@linux-lts.path
-    systemctl start zfs-esp-sync@linux-lts.path
+    systemctl enable zfs-esp-sync@linux.service
+    systemctl start zfs-esp-sync@linux.service
+    systemctl enable zfs-esp-sync@linux-lts.service
+    systemctl start zfs-esp-sync@linux-lts.service
 }
 
 setup_sudo() {
