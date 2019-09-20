@@ -34,10 +34,12 @@ umount -R /mnt || true
 zfs umount -a
 zpool export -a
 
-readonly efi_partnum=1
-readonly root_partnum=2
+readonly rescure_partnum=1
+readonly efi_partnum=2
+readonly root_partnum=3
 
 sgdisk --zap-all "$disk"
+sgdisk --new=$rescure_partnum:0:+2G "$disk"
 sgdisk --new=$efi_partnum:0:+512M --typecode=$efi_partnum:EF00 "$disk"
 sgdisk --largest-new=$root_partnum --typecode=$root_partnum:BF01 "$disk"
 
@@ -47,6 +49,7 @@ readonly root_disk="$disk-part$root_partnum"
 while [[ ! -e "$efi_disk" ]]; do sleep 1; done
 while [[ ! -e "$root_disk" ]]; do sleep 1; done
 
+export replace_efi_boot=yes
 export efi_disk
 export root_disk
-"$(dirname "$0")"/install.sh
+"$(dirname "$0")"/install-existing-partitions.sh

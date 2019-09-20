@@ -17,11 +17,13 @@ set -o xtrace
 
 modprobe zfs
 
-read -r -p "Replace EFI/boot entry with EFI shell? [yes/no]" replace_efi_boot
+replace_efi_boot=${replace_efi_boot:-""}
+[[ "$replace_efi_boot" == "" ]] \
+    && read -r -p "Replace EFI/boot entry with EFI shell? [yes/no] " replace_efi_boot
 
 [[ "$replace_efi_boot" != "yes" ]] \
     && [[ "$replace_efi_boot" != "no" ]] \
-    && echo "unknown response" \
+    && echo "unknown value for replace_efi_boot: $replace_efi_boot" \
     && exit 1
 
 read -r -p "Enter the username to be created in the new system: " username
@@ -31,7 +33,9 @@ lsblk -p
 ls -l --color /dev/disk/by-id/*
 
 
-read -r -e -p "Which disk for the EFI parition? " efi_disk
+efi_disk=${efi_disk:-""}
+[[ "$efi_disk" == "" ]] \
+    && read -r -e -p "Which disk for the EFI parition? " efi_disk
 
 [[ ! -e $efi_disk ]] \
     && echo "Error: unknown disk $efi_disk" 1>&2 \
@@ -42,7 +46,9 @@ read -r -e -p "Which disk for the EFI parition? " efi_disk
     && exit 1
 
 
-read -r -e -p "Which disk for the root partition? " root_disk
+root_disk=${root_disk:-""}
+[[ "$root_disk" == "" ]] \
+    && read -r -e -p "Which disk for the root partition? " root_disk
 
 [[ ! -e $root_disk ]] \
     && echo "Error: unknown disk $root_disk" 1>&2 \

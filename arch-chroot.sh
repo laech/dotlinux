@@ -83,7 +83,7 @@ setup_zfs_esp_sync() {
     sudo -u nobody git clone https://gitlab.com/lae/arch-zfs-esp-sync.git
     cd arch-zfs-esp-sync
 
-    sudo -u nobody makepkg
+    sudo -u nobody -- makepkg -s
 
     echo '
 default=linux
