@@ -99,6 +99,8 @@ esp_mount=/boot/efi
     systemctl start zfs-esp-sync@linux.service
     systemctl enable zfs-esp-sync@linux-lts.service
     systemctl start zfs-esp-sync@linux-lts.service
+
+    zfs-esp-sync linux
 }
 
 setup_sudo() {
