@@ -89,7 +89,7 @@ mount "$efi_disk" /mnt/boot/efi
 readonly mirrors_url="https://www.archlinux.org/mirrorlist/?country=NZ&country=AU&protocol=https&use_mirror_status=on"
 echo "# $mirrors_url" > /etc/pacman.d/mirrorlist
 curl -s "$mirrors_url" | sed -e 's/^#Server/Server/' -e '/^#/d' >> /etc/pacman.d/mirrorlist
-pacstrap /mnt base
+pacstrap /mnt base base-devel linux-headers
 
 genfstab -U -f /mnt/boot/efi /mnt >> /mnt/etc/fstab
 
