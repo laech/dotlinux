@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-
+#
+# Partitions a disk and install and setup.
+#
+# See also:
 # https://github.com/zfsonlinux/zfs/wiki/Debian-Stretch-Root-on-ZFS
 # https://wiki.archlinux.org/index.php/Installing_Arch_Linux_on_ZFS
 # https://wiki.archlinux.org/index.php/Installation_guide
@@ -11,9 +14,9 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-[[ $EUID != 0 ]] \
-    && echo "Error: need to run as root." 1>&2 \
-    && exit 1
+[[ $EUID != 0 ]] &&
+  echo "Error: need to run as root." 1>&2 &&
+  exit 1
 
 modprobe zfs
 
@@ -22,13 +25,13 @@ ls -l --color /dev/disk/by-id/*
 
 read -r -e -p "Which disk (not partition) to install to? " disk
 
-[[ ! -e $disk ]] \
-    && echo "Error: unknown disk $disk" 1>&2 \
-    && exit 1
+[[ ! -e $disk ]] &&
+  echo "Error: unknown disk $disk" 1>&2 &&
+  exit 1
 
-[[ $disk != /dev/disk/by-id/* ]] \
-    && echo "Error: must choose a disk under /dev/disk/by-id/" 1>&2 \
-    && exit 1
+[[ $disk != /dev/disk/by-id/* ]] &&
+  echo "Error: must choose a disk under /dev/disk/by-id/" 1>&2 &&
+  exit 1
 
 umount -R /mnt || true
 zfs umount -a
@@ -52,4 +55,4 @@ while [[ ! -e "$root_disk" ]]; do sleep 1; done
 export replace_efi_boot=yes
 export efi_disk
 export root_disk
-"$(dirname "$0")"/install-existing-partitions.sh
+"$(dirname "${BASH_SOURCE[0]}")"/setup-install.sh
