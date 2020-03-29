@@ -67,9 +67,9 @@ Server = https://archzfs.com/$repo/$arch
 
   if [[ "$installed_linux_version" != "$zfs_want_linux_version" ]]; then
     pacman -S --needed --noconfirm wget
-    wget "https://archive.archlinux.org/packages/l/linux/linux-$zfs_want_linux_version-x86_64.pkg.tar.xz"
-    wget "https://archive.archlinux.org/packages/l/linux-headers/linux-headers-$zfs_want_linux_version-x86_64.pkg.tar.xz"
-    pacman -U --noconfirm "linux-$zfs_want_linux_version-x86_64.pkg.tar.xz" "linux-headers-$zfs_want_linux_version-x86_64.pkg.tar.xz"
+    wget "https://archive.archlinux.org/packages/l/linux/linux-$zfs_want_linux_version-x86_64.pkg.tar.zst"
+    wget "https://archive.archlinux.org/packages/l/linux-headers/linux-headers-$zfs_want_linux_version-x86_64.pkg.tar.zst"
+    pacman -U --noconfirm "linux-$zfs_want_linux_version-x86_64.pkg.tar.zst" "linux-headers-$zfs_want_linux_version-x86_64.pkg.tar.zst"
   fi
 
   pacman -S --needed --noconfirm archzfs-linux
