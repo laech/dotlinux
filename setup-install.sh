@@ -72,7 +72,6 @@ zpool create -f \
   -O acltype=posixacl \
   -O xattr=sa \
   -O atime=off \
-  -O compression=lz4 \
   -O canmount=off \
   -O mountpoint=none \
   -R /mnt \
