@@ -33,6 +33,13 @@ read -r -e -p "Which disk (not partition) to install to? " disk
   echo "Error: must choose a disk under /dev/disk/by-id/" 1>&2 &&
   exit 1
 
+read -r -p "Encrypt disk? [yes/no] " encrypt
+
+[[ "$encrypt" != "yes" ]] &&
+  [[ "$encrypt" != "no" ]] &&
+  echo "unknown value for encrypt: $encrypt" 1>&2 &&
+  exit 1
+
 umount -R /mnt || true
 zfs umount -a
 zpool export -a
@@ -55,4 +62,5 @@ while [[ ! -e "$root_disk" ]]; do sleep 1; done
 export replace_efi_boot=yes
 export efi_disk
 export root_disk
+export encrypt
 "$(dirname "${BASH_SOURCE[0]}")"/setup-install.sh

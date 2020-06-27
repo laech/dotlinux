@@ -39,10 +39,8 @@ setup_mirrors() {
 setup_zfs() {
 
   readonly hooks="(base udev autodetect modconf block keyboard zfs filesystems)"
-  sed -i \
-    "s/^HOOKS=.*/HOOKS=$hooks/g" \
-    /etc/mkinitcpio.conf &&
-    grep -F "$hooks" /etc/mkinitcpio.conf >/dev/null
+  sed -i "s/^HOOKS=.*/HOOKS=$hooks/g" /etc/mkinitcpio.conf
+  grep -F "$hooks" /etc/mkinitcpio.conf >/dev/null
 
   grep -F '[archzfs]' /etc/pacman.conf >/dev/null || echo '
 [archzfs]

@@ -26,7 +26,7 @@ replace_efi_boot=${replace_efi_boot:-""}
 
 [[ "$replace_efi_boot" != "yes" ]] &&
   [[ "$replace_efi_boot" != "no" ]] &&
-  echo "unknown value for replace_efi_boot: $replace_efi_boot" &&
+  echo "unknown value for replace_efi_boot: $replace_efi_boot" 1>&2 &&
   exit 1
 
 read -r -p "Enter the username to be created in the new system: " username
@@ -59,6 +59,18 @@ root_disk=${root_disk:-""}
   echo "Error: must choose a disk under /dev/disk/by-id/" 1>&2 &&
   exit 1
 
+encrypt=${encrypt:-""}
+[[ "$encrypt" == "" ]] &&
+  read -r -p "Encrypt disk? [yes/no] " encrypt
+
+[[ "$encrypt" != "yes" ]] &&
+  [[ "$encrypt" != "no" ]] &&
+  echo "unknown value for encrypt: $encrypt" 1>&2 &&
+  exit 1
+
+encrypt_opts=""
+[[ "$encrypt" == "yes" ]] && encrypt_opts="-O encryption=on -O keyformat=passphrase"
+
 timedatectl set-ntp true
 
 umount -R /mnt || true
@@ -67,13 +79,12 @@ zpool export -a
 
 zpool create -f \
   -o ashift=12 \
-  -O encryption=on \
-  -O keyformat=passphrase \
   -O acltype=posixacl \
   -O xattr=sa \
   -O atime=off \
   -O canmount=off \
   -O mountpoint=none \
+  $encrypt_opts \
   -R /mnt \
   zroot "$root_disk"
 
@@ -88,7 +99,7 @@ mount "$efi_disk" /mnt/boot/efi
 readonly mirrors_url="https://www.archlinux.org/mirrorlist/?country=NZ&country=AU&protocol=https&use_mirror_status=on"
 echo "# $mirrors_url" >/etc/pacman.d/mirrorlist
 curl -s "$mirrors_url" | sed -e 's/^#Server/Server/' -e '/^#/d' >>/etc/pacman.d/mirrorlist
-pacstrap /mnt base base-devel linux-headers
+pacstrap /mnt base base-devel linux linux-headers
 
 genfstab -U -f /mnt/boot/efi /mnt >>/mnt/etc/fstab
 
