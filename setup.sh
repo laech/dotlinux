@@ -17,10 +17,10 @@ setup_hostname() {
 setup_locale() {
   echo 'LANG=en_US.UTF-8' >/etc/locale.conf
 
-  sed -i \
-    's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' \
-    /etc/locale.gen &&
-    grep '^en_US.UTF-8 UTF-8' /etc/locale.gen >/dev/null
+  sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' /etc/locale.gen
+  sed -i 's/^#en_NZ.UTF-8 UTF-8/en_NZ.UTF-8 UTF-8/g' /etc/locale.gen
+  grep '^en_US.UTF-8 UTF-8' /etc/locale.gen >/dev/null
+  grep '^en_NZ.UTF-8 UTF-8' /etc/locale.gen >/dev/null
 
   locale-gen
 }
